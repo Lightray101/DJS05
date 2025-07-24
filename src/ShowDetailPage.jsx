@@ -15,19 +15,11 @@ const GENRE_MAP = {
 
 function formatDate(dateString) {
   const date = new Date(dateString);
-  const now = new Date();
-  const seconds = Math.floor((now - date) / 1000);
-  let interval = seconds / 31536000;
-  if (interval > 1) return Math.floor(interval) + " years ago";
-  interval = seconds / 2592000;
-  if (interval > 1) return Math.floor(interval) + " months ago";
-  interval = seconds / 86400;
-  if (interval > 1) return Math.floor(interval) + " days ago";
-  interval = seconds / 3600;
-  if (interval > 1) return Math.floor(interval) + " hours ago";
-  interval = seconds / 60;
-  if (interval > 1) return Math.floor(interval) + " minutes ago";
-  return Math.floor(seconds) + " seconds ago";
+  return date.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 }
 
 function ShowDetailPage() {
@@ -36,7 +28,7 @@ function ShowDetailPage() {
   const [show, setShow] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [expandedSeason, setExpandedSeason] = useState(null);
+  const [selectedSeasonIdx, setSelectedSeasonIdx] = useState(0);
 
   useEffect(() => {
     fetch(`https://podcast-api.netlify.app/id/${id}`)
@@ -58,113 +50,82 @@ function ShowDetailPage() {
   if (error) return <div>Error: {error}</div>;
   if (!show) return <div>Show not found.</div>;
 
-  function shorten(text, max = 120) {
-    if (!text) return "";
-    return text.length > max ? text.slice(0, max) + "..." : text;
-  }
-
-  // Preserve query params in back link
   const backUrl = location.search ? `/${location.search}` : "/";
 
+  const seasons = show.seasons || [];
+  const selectedSeason = seasons[selectedSeasonIdx] || {};
+
   return (
-    <div>
-      <Link to={backUrl}>← Back to Homepage</Link>
-      <h1>{show.title}</h1>
-      <img
-        src={show.image}
-        alt={show.title}
-        style={{ width: "300px", borderRadius: "8px" }}
-      />
-      <p>{show.description}</p>
-      <div>
-        {show.genres &&
-          show.genres.map((id) => (
-            <span
-              key={id}
-              style={{
-                display: "inline-block",
-                background: "#eee",
-                borderRadius: "4px",
-                padding: "0.2rem 0.6rem",
-                marginRight: "0.5rem",
-                fontSize: "0.9rem",
-              }}
-            >
-              {GENRE_MAP[id] || "Unknown"}
-            </span>
-          ))}
+    <div className="show-detail-container">
+      <Link to={backUrl} className="back-link">
+        ← Back to Homepage
+      </Link>
+      <div className="show-header-row">
+        <img src={show.image} alt={show.title} className="show-cover" />
+        <div className="show-info">
+          <h1>{show.title}</h1>
+          <p>{show.description}</p>
+          <div className="show-meta">
+            <div>
+              <strong>Genres:</strong>{" "}
+              {show.genres.map((id) => (
+                <span className="genre-tag" key={id}>
+                  {GENRE_MAP[id] || "Unknown"}
+                </span>
+              ))}
+            </div>
+            <div>
+              <strong>Last Updated:</strong> {formatDate(show.updated)}
+            </div>
+            <div>
+              <strong>Total Seasons:</strong> {seasons.length}
+            </div>
+            <div>
+              <strong>Total Episodes:</strong>{" "}
+              {seasons.reduce((sum, s) => sum + (s.episodes?.length || 0), 0)}
+            </div>
+          </div>
+        </div>
       </div>
-      <p>
-        <strong>Last updated:</strong> {formatDate(show.updated)}
-      </p>
-      <div style={{ marginTop: "2rem" }}>
-        <h2>Seasons</h2>
-        {show.seasons && show.seasons.length > 0 ? (
-          <ul style={{ listStyle: "none", padding: 0 }}>
-            {show.seasons.map((season) => (
-              <li key={season.id} style={{ marginBottom: "1rem" }}>
-                <button
-                  style={{
-                    background: "#f5f5f5",
-                    border: "1px solid #ccc",
-                    borderRadius: "4px",
-                    padding: "0.5rem 1rem",
-                    cursor: "pointer",
-                    width: "100%",
-                    textAlign: "left",
-                  }}
-                  onClick={() =>
-                    setExpandedSeason(
-                      expandedSeason === season.id ? null : season.id
-                    )
-                  }
-                >
-                  <strong>{season.title}</strong> &mdash;{" "}
-                  {season.episodes.length} episodes
-                  <span style={{ float: "right" }}>
-                    {expandedSeason === season.id ? "▲" : "▼"}
+
+      <div className="season-selector-row">
+        <h2>Current Season</h2>
+        <select
+          className="season-dropdown"
+          value={selectedSeasonIdx}
+          onChange={(e) => setSelectedSeasonIdx(Number(e.target.value))}
+        >
+          {seasons.map((season, idx) => (
+            <option key={season.id} value={idx}>
+              {season.title || `Season ${idx + 1}`}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="episode-list">
+        {selectedSeason.episodes && selectedSeason.episodes.length > 0 ? (
+          selectedSeason.episodes.map((ep, idx) => (
+            <div className="episode-card" key={ep.id}>
+              <div className="episode-thumb">
+                <img src={ep.image} alt={ep.title} />
+              </div>
+              <div className="episode-info">
+                <strong>
+                  Episode {idx + 1}: {ep.title}
+                </strong>
+                <div className="episode-meta">
+                  <span>{ep.duration || ""}</span>
+                  <span>
+                    {ep.releaseDate ? formatDate(ep.releaseDate) : ""}
                   </span>
-                </button>
-                {expandedSeason === season.id && (
-                  <ul style={{ marginTop: "0.5rem", paddingLeft: "1rem" }}>
-                    {season.episodes.map((ep, idx) => (
-                      <li
-                        key={ep.id}
-                        style={{
-                          marginBottom: "1rem",
-                          borderBottom: "1px solid #eee",
-                          paddingBottom: "1rem",
-                        }}
-                      >
-                        <div style={{ display: "flex", gap: "1rem" }}>
-                          <img
-                            src={ep.image}
-                            alt={ep.title}
-                            style={{
-                              width: "80px",
-                              height: "80px",
-                              objectFit: "cover",
-                              borderRadius: "6px",
-                            }}
-                          />
-                          <div>
-                            <strong>
-                              Episode {idx + 1}: {ep.title}
-                            </strong>
-                            <p style={{ margin: "0.5rem 0" }}>
-                              {shorten(ep.description)}
-                            </p>
-                          </div>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </li>
-            ))}
-          </ul>
+                </div>
+                <p>{ep.description}</p>
+              </div>
+            </div>
+          ))
         ) : (
-          <p>No season information available.</p>
+          <p>No episodes available for this season.</p>
         )}
       </div>
     </div>

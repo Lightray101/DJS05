@@ -140,7 +140,6 @@ function HomePage() {
       <main className="main-content">
         <Search searchTerm={searchTerm} onSearchChange={setSearchTerm} />
 
-        {/* Centered Filters */}
         <div className="filters-center">
           <Filters
             genres={genres}

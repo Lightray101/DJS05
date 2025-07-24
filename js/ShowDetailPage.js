@@ -83,33 +83,37 @@ function ShowDetailPage() {
     <div>
       <Link to={backUrl}>← Back to Homepage</Link>
       <h1>{show.title}</h1>
-      <img
-        src={show.image}
-        alt={show.title}
-        style={{ width: "300px", borderRadius: "8px" }}
-      />
-      <p>{show.description}</p>
-      <div>
-        {show.genres &&
-          show.genres.map((id) => (
-            <span
-              key={id}
-              style={{
-                display: "inline-block",
-                background: "#eee",
-                borderRadius: "4px",
-                padding: "0.2rem 0.6rem",
-                marginRight: "0.5rem",
-                fontSize: "0.9rem",
-              }}
-            >
-              {GENRE_MAP[id] || "Unknown"}
-            </span>
-          ))}
+      <div className="show-flex-row">
+        <img
+          src={show.image}
+          alt={show.title}
+          style={{ width: "300px", borderRadius: "8px", flexShrink: 0 }}
+        />
+        <div className="show-details">
+          <p>{show.description}</p>
+          <div>
+            {show.genres &&
+              show.genres.map((id) => (
+                <span
+                  key={id}
+                  style={{
+                    display: "inline-block",
+                    background: "#eee",
+                    borderRadius: "4px",
+                    padding: "0.2rem 0.6rem",
+                    marginRight: "0.5rem",
+                    fontSize: "0.9rem",
+                  }}
+                >
+                  {GENRE_MAP[id] || "Unknown"}
+                </span>
+              ))}
+          </div>
+          <p>
+            <strong>Last updated:</strong> {formatDate(show.updated)}
+          </p>
+        </div>
       </div>
-      <p>
-        <strong>Last updated:</strong> {formatDate(show.updated)}
-      </p>
 
       {/* Season Navigation */}
       <div style={{ marginTop: "2rem" }}>
