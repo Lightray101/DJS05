@@ -1,0 +1,28 @@
+.podcast-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+/* Responsive grid adjustments */
+@media (min-width: 1200px) {
+  .podcast-grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .podcast-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 375px) {
+  .podcast-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}
