@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link, useLocation } from "react-router-dom";
+import LoadingSpinner from "./components/LoadingSpinner.jsx";
 
 const GENRE_MAP = {
   1: "Personal Growth",
@@ -47,7 +48,7 @@ function ShowDetailPage() {
   }, [id]);
 
   // Defensive fallback for show
-  if (loading) return <div>Loading show details...</div>;
+  if (loading) return <LoadingSpinner loadingText="Loading show details..." />;
   if (error) return <div>Error: {error}</div>;
   if (!show) return <div>Show not found.</div>;
 
@@ -61,7 +62,7 @@ function ShowDetailPage() {
   return (
     <div className="show-detail-container">
       <Link to={backUrl} className="back-link">
-        ← Back to Homepage
+        <button className="back-button">← Back to Homepage</button>
       </Link>
       <div className="show-header-row">
         <img src={show.image} alt={show.title} className="show-cover" />

@@ -265,3 +265,23 @@ body {
     margin-bottom: 0.5rem;
   }
 }
+
+/* Neat back button style */
+.back-button {
+  padding: 0.5rem 1.5rem;
+  background: linear-gradient(90deg, #007bff 0%, #0056b3 100%);
+  color: #fff;
+  border: none;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.08);
+  transition: background 0.2s, transform 0.1s;
+  outline: none;
+}
+.back-button:hover, .back-button:focus {
+  background: linear-gradient(90deg, #0056b3 0%, #007bff 100%);
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 4px 16px rgba(0, 123, 255, 0.15);
+}
