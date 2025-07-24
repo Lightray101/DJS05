@@ -46,14 +46,17 @@ function ShowDetailPage() {
       });
   }, [id]);
 
+  // Defensive fallback for show
   if (loading) return <div>Loading show details...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!show) return <div>Show not found.</div>;
 
-  const backUrl = location.search ? `/${location.search}` : "/";
-
-  const seasons = show.seasons || [];
+  // Defensive fallback for seasons and genres
+  const seasons = Array.isArray(show.seasons) ? show.seasons : [];
   const selectedSeason = seasons[selectedSeasonIdx] || {};
+  const genres = Array.isArray(show.genres) ? show.genres : [];
+
+  const backUrl = location.search ? `/${location.search}` : "/";
 
   return (
     <div className="show-detail-container">
@@ -68,11 +71,15 @@ function ShowDetailPage() {
           <div className="show-meta">
             <div>
               <strong>Genres:</strong>{" "}
-              {show.genres.map((id) => (
-                <span className="genre-tag" key={id}>
-                  {GENRE_MAP[id] || "Unknown"}
-                </span>
-              ))}
+              {genres.length > 0 ? (
+                genres.map((id) => (
+                  <span className="genre-tag" key={id}>
+                    {GENRE_MAP[id] || "Unknown"}
+                  </span>
+                ))
+              ) : (
+                <span>No genres listed</span>
+              )}
             </div>
             <div>
               <strong>Last Updated:</strong> {formatDate(show.updated)}
@@ -95,20 +102,24 @@ function ShowDetailPage() {
           value={selectedSeasonIdx}
           onChange={(e) => setSelectedSeasonIdx(Number(e.target.value))}
         >
-          {seasons.map((season, idx) => (
-            <option key={season.id} value={idx}>
-              {season.title || `Season ${idx + 1}`}
-            </option>
-          ))}
+          {seasons.length > 0 ? (
+            seasons.map((season, idx) => (
+              <option key={season.id || idx} value={idx}>
+                {season.title || `Season ${idx + 1}`}
+              </option>
+            ))
+          ) : (
+            <option>No seasons available</option>
+          )}
         </select>
       </div>
 
       <div className="episode-list">
         {selectedSeason.episodes && selectedSeason.episodes.length > 0 ? (
           selectedSeason.episodes.map((ep, idx) => (
-            <div className="episode-card" key={ep.id}>
+            <div className="episode-card" key={ep.id || idx}>
               <div className="episode-thumb">
-                <img src={ep.image} alt={ep.title} />
+                <img src={ep.image ? ep.image : show.image} alt={ep.title} />
               </div>
               <div className="episode-info">
                 <strong>

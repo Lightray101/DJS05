@@ -36,6 +36,28 @@ function PodcastGrid({ podcasts, genres }) {
         >
           <img src={podcast.image} alt={podcast.title} />
           <h2>{podcast.title}</h2>
+          <div className="podcast-genres">
+            {podcast.genres &&
+              podcast.genres.map((id) => {
+                const genre = genres.find((g) => g.id === id);
+                return (
+                  <span className="genre-tag" key={id}>
+                    {genre ? genre.title : "Unknown"}
+                  </span>
+                );
+              })}
+          </div>
+          <div className="podcast-meta">
+            <span>
+              <strong>Last updated:</strong>{" "}
+              {podcast.updated
+                ? new Date(podcast.updated).toLocaleDateString()
+                : "Unknown"}
+            </span>
+            <span>
+              <strong>Seasons:</strong> {podcast.seasons || 0}
+            </span>
+          </div>
         </Link>
       ))}
     </div>
