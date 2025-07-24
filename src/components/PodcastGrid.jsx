@@ -1,5 +1,5 @@
 import React from "react";
-import PodcastCard from "./PodcastCard.jsx";
+import { Link, useSearchParams } from "react-router-dom";
 import "./PodcastGrid.css";
 
 /**
@@ -7,10 +7,14 @@ import "./PodcastGrid.css";
  * @param {Object} props - Component props
  * @param {Array} props.podcasts - Array of podcast objects
  * @param {Array} props.genres - Array of genre objects
- * @param {Function} props.onPodcastClick - Callback for podcast card click
  * @returns {JSX.Element} The podcast grid component
  */
-function PodcastGrid({ podcasts, genres, onPodcastClick }) {
+function PodcastGrid({ podcasts, genres }) {
+  const [searchParams] = useSearchParams();
+  const queryString = searchParams.toString()
+    ? `?${searchParams.toString()}`
+    : "";
+
   /**
    * Get genre names for a podcast
    * @param {Array} genreIds - Array of genre IDs
@@ -23,16 +27,18 @@ function PodcastGrid({ podcasts, genres, onPodcastClick }) {
   };
 
   return (
-    <section className="podcast-grid">
+    <div className="podcast-grid">
       {podcasts.map((podcast) => (
-        <PodcastCard
+        <Link
           key={podcast.id}
-          podcast={podcast}
-          genreNames={getGenreNames(podcast.genres)}
-          onClick={() => onPodcastClick(podcast)}
-        />
+          to={`/show/${podcast.id}${queryString}`}
+          className="podcast-card"
+        >
+          <img src={podcast.image} alt={podcast.title} />
+          <h2>{podcast.title}</h2>
+        </Link>
       ))}
-    </section>
+    </div>
   );
 }
 

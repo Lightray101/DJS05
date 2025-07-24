@@ -26,6 +26,14 @@ body {
   width: 100%;
 }
 
+/* Centering filters */
+/* .filters-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1.5rem 0;
+} */
+
 /* Responsive breakpoints */
 @media (max-width: 768px) {
   .main-content {
@@ -37,4 +45,39 @@ body {
   .main-content {
     padding: 0.5rem;
   }
+}
+
+/* Filters component styles */
+.filters {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.filter {
+  margin: 0.5rem;
+}
+
+.sort {
+  margin: 0.5rem;
+}
+
+.select {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 0.25rem;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.select:hover {
+  border-color: #007bff;
+}
+
+.select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }

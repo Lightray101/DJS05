@@ -70,7 +70,11 @@ function ShowDetailPage() {
     <div>
       <Link to={backUrl}>← Back to Homepage</Link>
       <h1>{show.title}</h1>
-      <img src={show.image} alt={show.title} style={{ width: "300px", borderRadius: "8px" }} />
+      <img
+        src={show.image}
+        alt={show.title}
+        style={{ width: "300px", borderRadius: "8px" }}
+      />
       <p>{show.description}</p>
       <div>
         {show.genres &&
@@ -110,10 +114,13 @@ function ShowDetailPage() {
                     textAlign: "left",
                   }}
                   onClick={() =>
-                    setExpandedSeason(expandedSeason === season.id ? null : season.id)
+                    setExpandedSeason(
+                      expandedSeason === season.id ? null : season.id
+                    )
                   }
                 >
-                  <strong>{season.title}</strong> &mdash; {season.episodes.length} episodes
+                  <strong>{season.title}</strong> &mdash;{" "}
+                  {season.episodes.length} episodes
                   <span style={{ float: "right" }}>
                     {expandedSeason === season.id ? "▲" : "▼"}
                   </span>
