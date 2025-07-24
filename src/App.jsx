@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Routes, Route } from "react-router-dom";
 import Header from "./components/Header.jsx";
 import Search from "./components/Search.jsx";
 import Filters from "./components/Filters.jsx";
@@ -7,6 +8,8 @@ import Pagination from "./components/Pagination.jsx";
 import Modal from "./components/Modal.jsx";
 import LoadingSpinner from "./components/LoadingSpinner.jsx";
 import ErrorMessage from "./components/ErrorMessage.jsx";
+import HomePage from "./HomePage";
+import ShowDetailPage from "./ShowDetailPage";
 import { genres } from "./data/genres.js";
 // API endpoint for podcast data
 const API_URL = "https://podcast-api.netlify.app/";
@@ -226,6 +229,11 @@ function App() {
           onClose={handleCloseModal}
         />
       )}
+
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/show/:id" element={<ShowDetailPage />} />
+      </Routes>
     </div>
   );
 }

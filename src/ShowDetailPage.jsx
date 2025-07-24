@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link, useLocation } from "react-router-dom";
 
-/**
- * Maps genre IDs to their titles.
- */
 const GENRE_MAP = {
   1: "Personal Growth",
   2: "Investigative Journalism",
@@ -16,16 +13,10 @@ const GENRE_MAP = {
   9: "Kids and Family",
 };
 
-/**
- * Formats a date string into a human-readable format (e.g., "2 days ago").
- * @param {string} dateString - The ISO date string.
- * @returns {string} The formatted, human-readable date.
- */
 function formatDate(dateString) {
   const date = new Date(dateString);
   const now = new Date();
   const seconds = Math.floor((now - date) / 1000);
-
   let interval = seconds / 31536000;
   if (interval > 1) return Math.floor(interval) + " years ago";
   interval = seconds / 2592000;
@@ -39,19 +30,13 @@ function formatDate(dateString) {
   return Math.floor(seconds) + " seconds ago";
 }
 
-/**
- * Show detail page component.
- * Fetches and displays details for a single show.
- * @returns {JSX.Element}
- */
 function ShowDetailPage() {
   const { id } = useParams();
+  const location = useLocation();
   const [show, setShow] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [expandedSeason, setExpandedSeason] = useState(null);
-  const location = useLocation();
-  const backUrl = location.search ? `/${location.search}` : "/";
 
   useEffect(() => {
     fetch(`https://podcast-api.netlify.app/id/${id}`)
@@ -73,21 +58,19 @@ function ShowDetailPage() {
   if (error) return <div>Error: {error}</div>;
   if (!show) return <div>Show not found.</div>;
 
-  // Helper to shorten episode descriptions
   function shorten(text, max = 120) {
     if (!text) return "";
     return text.length > max ? text.slice(0, max) + "..." : text;
   }
 
+  // Preserve query params in back link
+  const backUrl = location.search ? `/${location.search}` : "/";
+
   return (
     <div>
       <Link to={backUrl}>← Back to Homepage</Link>
       <h1>{show.title}</h1>
-      <img
-        src={show.image}
-        alt={show.title}
-        style={{ width: "300px", borderRadius: "8px" }}
-      />
+      <img src={show.image} alt={show.title} style={{ width: "300px", borderRadius: "8px" }} />
       <p>{show.description}</p>
       <div>
         {show.genres &&
@@ -110,8 +93,6 @@ function ShowDetailPage() {
       <p>
         <strong>Last updated:</strong> {formatDate(show.updated)}
       </p>
-
-      {/* Season Navigation */}
       <div style={{ marginTop: "2rem" }}>
         <h2>Seasons</h2>
         {show.seasons && show.seasons.length > 0 ? (
@@ -129,13 +110,10 @@ function ShowDetailPage() {
                     textAlign: "left",
                   }}
                   onClick={() =>
-                    setExpandedSeason(
-                      expandedSeason === season.id ? null : season.id
-                    )
+                    setExpandedSeason(expandedSeason === season.id ? null : season.id)
                   }
                 >
-                  <strong>{season.title}</strong> &mdash;{" "}
-                  {season.episodes.length} episodes
+                  <strong>{season.title}</strong> &mdash; {season.episodes.length} episodes
                   <span style={{ float: "right" }}>
                     {expandedSeason === season.id ? "▲" : "▼"}
                   </span>

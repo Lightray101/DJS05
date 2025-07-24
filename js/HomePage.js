@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
 
 /**
  * Homepage component for podcast listing.
@@ -10,6 +10,9 @@ function HomePage() {
   const [podcasts, setPodcasts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [search, setSearch] = useState(searchParams.get("search") || "");
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch("https://podcast-api.netlify.app/")
@@ -27,18 +30,37 @@ function HomePage() {
       });
   }, []);
 
+  // Filter podcasts by search term
+  const filteredPodcasts = podcasts.filter((podcast) =>
+    podcast.title.toLowerCase().includes(search.toLowerCase())
+  );
+
+  function handleSearchChange(e) {
+    setSearch(e.target.value);
+    setSearchParams({ search: e.target.value });
+  }
+
   if (loading) return <div>Loading podcasts...</div>;
   if (error) return <div>Error: {error}</div>;
-  if (podcasts.length === 0) return <div>No podcasts found.</div>;
+  if (filteredPodcasts.length === 0) return <div>No podcasts found.</div>;
 
   return (
     <div>
       <h1>Podcast Shows</h1>
+      <input
+        type="text"
+        placeholder="Search podcasts..."
+        value={search}
+        onChange={handleSearchChange}
+        style={{ marginBottom: "1rem", padding: "0.5rem", width: "300px" }}
+      />
       <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
-        {podcasts.map((podcast) => (
+        {filteredPodcasts.map((podcast) => (
           <Link
             key={podcast.id}
-            to={`/show/${podcast.id}`}
+            to={`/show/${podcast.id}${
+              search ? `?search=${encodeURIComponent(search)}` : ""
+            }`}
             style={{
               textDecoration: "none",
               color: "inherit",
