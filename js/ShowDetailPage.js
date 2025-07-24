@@ -49,6 +49,7 @@ function ShowDetailPage() {
   const [show, setShow] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [expandedSeason, setExpandedSeason] = useState(null);
 
   useEffect(() => {
     fetch(`https://podcast-api.netlify.app/id/${id}`)
@@ -69,6 +70,12 @@ function ShowDetailPage() {
   if (loading) return <div>Loading show details...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!show) return <div>Show not found.</div>;
+
+  // Helper to shorten episode descriptions
+  function shorten(text, max = 120) {
+    if (!text) return "";
+    return text.length > max ? text.slice(0, max) + "..." : text;
+  }
 
   return (
     <div>
@@ -101,7 +108,78 @@ function ShowDetailPage() {
       <p>
         <strong>Last updated:</strong> {formatDate(show.updated)}
       </p>
-      {/* Season navigation will be added in the next step */}
+
+      {/* Season Navigation */}
+      <div style={{ marginTop: "2rem" }}>
+        <h2>Seasons</h2>
+        {show.seasons && show.seasons.length > 0 ? (
+          <ul style={{ listStyle: "none", padding: 0 }}>
+            {show.seasons.map((season) => (
+              <li key={season.id} style={{ marginBottom: "1rem" }}>
+                <button
+                  style={{
+                    background: "#f5f5f5",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                    padding: "0.5rem 1rem",
+                    cursor: "pointer",
+                    width: "100%",
+                    textAlign: "left",
+                  }}
+                  onClick={() =>
+                    setExpandedSeason(
+                      expandedSeason === season.id ? null : season.id
+                    )
+                  }
+                >
+                  <strong>{season.title}</strong> &mdash;{" "}
+                  {season.episodes.length} episodes
+                  <span style={{ float: "right" }}>
+                    {expandedSeason === season.id ? "▲" : "▼"}
+                  </span>
+                </button>
+                {expandedSeason === season.id && (
+                  <ul style={{ marginTop: "0.5rem", paddingLeft: "1rem" }}>
+                    {season.episodes.map((ep, idx) => (
+                      <li
+                        key={ep.id}
+                        style={{
+                          marginBottom: "1rem",
+                          borderBottom: "1px solid #eee",
+                          paddingBottom: "1rem",
+                        }}
+                      >
+                        <div style={{ display: "flex", gap: "1rem" }}>
+                          <img
+                            src={ep.image}
+                            alt={ep.title}
+                            style={{
+                              width: "80px",
+                              height: "80px",
+                              objectFit: "cover",
+                              borderRadius: "6px",
+                            }}
+                          />
+                          <div>
+                            <strong>
+                              Episode {idx + 1}: {ep.title}
+                            </strong>
+                            <p style={{ margin: "0.5rem 0" }}>
+                              {shorten(ep.description)}
+                            </p>
+                          </div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No season information available.</p>
+        )}
+      </div>
     </div>
   );
 }
