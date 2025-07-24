@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { podcasts, genres, seasons } from "../scripts.js";
+import HomePage from "./HomePage";
+import ShowDetailPage from "./ShowDetailPage";
 
 /**
  * Main class to manage the Podcast Application using Web Components
