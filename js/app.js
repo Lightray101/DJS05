@@ -1,3 +1,5 @@
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { podcasts, genres, seasons } from "../scripts.js";
 
 /**
@@ -220,4 +222,18 @@ class PodcastApp {
   }
 }
 
-export default PodcastApp;
+/**
+ * Main App component with routing
+ */
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/show/:id" element={<ShowDetailPage />} />
+      </Routes>
+    </Router>
+  );
+}
+
+export default App;
