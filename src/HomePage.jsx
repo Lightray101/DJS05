@@ -10,17 +10,20 @@ import { genres } from "./data/genres.js";
 const API_URL = "https://podcast-api.netlify.app/";
 import "./App.css";
 
+// HomePage is the main component for displaying and managing the podcast list UI
 function HomePage() {
-  const [podcasts, setPodcasts] = useState([]);
-  const [seasons, setSeasons] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedGenre, setSelectedGenre] = useState("all");
-  const [sortBy, setSortBy] = useState("updated-desc");
-  const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 12;
+  // State variables for podcasts, UI, and filters
+  const [podcasts, setPodcasts] = useState([]); // All podcasts fetched from API
+  const [seasons, setSeasons] = useState([]); // Season info for each podcast
+  const [loading, setLoading] = useState(true); // Loading state for API fetch
+  const [error, setError] = useState(null); // Error state for API fetch
+  const [searchTerm, setSearchTerm] = useState(""); // Search input value
+  const [selectedGenre, setSelectedGenre] = useState("all"); // Selected genre filter
+  const [sortBy, setSortBy] = useState("updated-desc"); // Sorting option
+  const [currentPage, setCurrentPage] = useState(1); // Current page for pagination
+  const ITEMS_PER_PAGE = 12; // Number of podcasts per page
 
+  // Fetch podcasts from the API when the component mounts
   useEffect(() => {
     const fetchPodcasts = async () => {
       try {
@@ -37,6 +40,7 @@ function HomePage() {
 
         setPodcasts(data || []);
 
+        // Prepare season data for each podcast (for demonstration)
         const seasonsData = data.map((podcast) => ({
           id: podcast.id,
           seasonDetails: podcast.seasons
@@ -60,9 +64,11 @@ function HomePage() {
     fetchPodcasts();
   }, []);
 
+  // Returns podcasts filtered by search and genre, and sorted by the selected option
   const getFilteredAndSortedPodcasts = () => {
     let filteredPodcasts = [...podcasts];
 
+    // Filter by search term
     if (searchTerm.trim()) {
       const searchLower = searchTerm.toLowerCase();
       filteredPodcasts = filteredPodcasts.filter((podcast) =>
@@ -70,6 +76,7 @@ function HomePage() {
       );
     }
 
+    // Filter by selected genre
     if (selectedGenre !== "all") {
       const genreId = parseInt(selectedGenre.replace("genre-", ""));
       filteredPodcasts = filteredPodcasts.filter((podcast) =>
@@ -77,6 +84,7 @@ function HomePage() {
       );
     }
 
+    // Sort podcasts by the selected sort option
     filteredPodcasts.sort((a, b) => {
       switch (sortBy) {
         case "updated-desc":
@@ -95,26 +103,33 @@ function HomePage() {
     return filteredPodcasts;
   };
 
+  // Get the filtered and sorted podcasts for display
   const filteredPodcasts = getFilteredAndSortedPodcasts();
 
+  // Returns only the podcasts for the current page (pagination)
   const getPaginatedPodcasts = () => {
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     const endIndex = startIndex + ITEMS_PER_PAGE;
     return filteredPodcasts.slice(startIndex, endIndex);
   };
 
+  // Podcasts to display on the current page
   const paginatedPodcasts = getPaginatedPodcasts();
+  // Total number of pages for pagination
   const totalPages = Math.ceil(filteredPodcasts.length / ITEMS_PER_PAGE);
 
+  // Handles changing the current page and scrolls to top
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // Reset to page 1 when filters or sort options change
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, selectedGenre, sortBy]);
 
+  // Show loading spinner while fetching podcasts
   if (loading) {
     return (
       <div className="app">
@@ -124,6 +139,7 @@ function HomePage() {
     );
   }
 
+  // Show error message if API fetch fails
   if (error) {
     return (
       <div className="app">
@@ -133,6 +149,7 @@ function HomePage() {
     );
   }
 
+  // Main render: search, filters, podcast grid, and pagination
   return (
     <div className="app">
       <Header />
@@ -154,10 +171,7 @@ function HomePage() {
           <ErrorMessage message="No podcasts found with the selected filters." />
         ) : (
           <>
-            <PodcastGrid
-              podcasts={paginatedPodcasts}
-              genres={genres}
-            />
+            <PodcastGrid podcasts={paginatedPodcasts} genres={genres} />
 
             <Pagination
               currentPage={currentPage}
